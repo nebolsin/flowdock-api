@@ -74,8 +74,9 @@ describe Flowdock do
 
     it "should send without reply_to address" do
       lambda {
+        stub_request(:post, push_to_team_inbox_url(@token)).to_return(:body => "", :status => 200)
         @flow.push_to_team_inbox(@valid_attributes.merge(:reply_to => ""))
-      }.should_not raise_error(Flowdock::Flow::InvalidParameterError)
+      }.should_not raise_error
     end
 
     it "should succeed with correct token, source and sender information" do
