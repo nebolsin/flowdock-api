@@ -4,6 +4,12 @@ require 'cgi'
 
 Capistrano::Configuration.instance(:must_exist).load do
 
+  _cset(:flowdock_api_token)    { abort "Please specify your Flowdock API token, set :flowdock_api_token, '1ec43...'" }
+  _cset(:flowdock_project_name) { application }
+  _cset(:flowdock_deploy_env)   { fetch(:stage, fetch(:rails_env, ENV["RAILS_ENV"] || "production")) }
+
+  _cset :flowdock_deploy_tags, []
+
   namespace :flowdock do
     task :read_current_deployed_branch do
       current_branch = capture("cat #{current_path}/BRANCH").chomp rescue "master"
@@ -19,7 +25,6 @@ Capistrano::Configuration.instance(:must_exist).load do
     end
 
     task :set_flowdock_api do
-      set :flowdock_deploy_env, fetch(:stage, fetch(:rails_env, ENV["RAILS_ENV"] || "production"))
       begin
         require 'grit'
         set :repo, Grit::Repo.new(".")
